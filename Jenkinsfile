@@ -1,4 +1,3 @@
-```groovy
 pipeline {
     agent {
         label 'Jenkins-Agent'
@@ -18,7 +17,6 @@ pipeline {
     }
 
     stages {
-
         stage("Cleanup Workspace") {
             steps {
                 cleanWs()
@@ -82,4 +80,3 @@ pipeline {
         }
     }
 }
-```
