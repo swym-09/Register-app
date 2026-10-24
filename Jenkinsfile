@@ -64,17 +64,11 @@ pipeline {
         stage("Build & Push Docker Image") {
             steps {
                 script {
-                    docker.withRegistry(
-                        'https://index.docker.io/v1/',
-                        'dockerhub-credentials'
-                    ) {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
                         docker_image = docker.build("${IMAGE_NAME}")
                     }
 
-                    docker.withRegistry(
-                        'https://index.docker.io/v1/',
-                        'dockerhub-credentials'
-                    ) {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
                         docker_image.push("${IMAGE_TAG}")
                         docker_image.push('latest')
                     }
