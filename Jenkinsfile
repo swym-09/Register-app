@@ -1,6 +1,8 @@
-
+```groovy
 pipeline {
-    agent { label 'Jenkins-Agent' }
+    agent {
+        label 'Jenkins-Agent'
+    }
 
     tools {
         jdk 'Java17'
@@ -16,6 +18,7 @@ pipeline {
     }
 
     stages {
+
         stage("Cleanup Workspace") {
             steps {
                 cleanWs()
@@ -64,11 +67,13 @@ pipeline {
         stage("Build & Push Docker Image") {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
-                        docker_image = docker.build("${IMAGE_NAME}")
-                    }
+                    def docker_image
 
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
+                    docker.withRegistry(
+                        'https://index.docker.io/v1/',
+                        'dockerhub'
+                    ) {
+                        docker_image = docker.build("${IMAGE_NAME}")
                         docker_image.push("${IMAGE_TAG}")
                         docker_image.push('latest')
                     }
@@ -77,3 +82,4 @@ pipeline {
         }
     }
 }
+```
