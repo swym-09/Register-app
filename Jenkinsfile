@@ -1,4 +1,4 @@
-```groovy
+
 pipeline {
     agent {
         label 'Jenkins-Agent'
@@ -66,13 +66,12 @@ pipeline {
         stage("Build & Push Docker Image") {
             steps {
                 script {
-                    def docker_image
-
                     docker.withRegistry(
                         'https://index.docker.io/v1/',
                         'dockerhub'
                     ) {
-                        docker_image = docker.build("${IMAGE_NAME}")
+                        def docker_image = docker.build("${IMAGE_NAME}")
+
                         docker_image.push("${IMAGE_TAG}")
                         docker_image.push('latest')
                     }
@@ -86,7 +85,7 @@ pipeline {
                     docker run --rm \
                       -v /var/run/docker.sock:/var/run/docker.sock \
                       aquasec/trivy:latest image \
-                      ${IMAGE_NAME}:latest \
+                      swymdocker/register-app-pipeline:latest \
                       --no-progress \
                       --scanners vuln \
                       --exit-code 0 \
@@ -98,12 +97,9 @@ pipeline {
 
         stage("Cleanup Artifacts") {
             steps {
-                script {
-                    sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
-                    sh "docker rmi ${IMAGE_NAME}:latest"
-                }
+                sh "docker image rm ${IMAGE_NAME}:${IMAGE_TAG} || true"
+                sh "docker image rm ${IMAGE_NAME}:latest || true"
             }
         }
     }
 }
-```
