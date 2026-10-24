@@ -1,3 +1,4 @@
+```groovy
 pipeline {
     agent {
         label 'Jenkins-Agent'
@@ -76,6 +77,22 @@ pipeline {
                         docker_image.push('latest')
                     }
                 }
+            }
+        }
+
+        stage("Trivy Scan") {
+            steps {
+                sh """
+                    docker run --rm \
+                      -v /var/run/docker.sock:/var/run/docker.sock \
+                      aquasec/trivy:latest image \
+                      ${IMAGE_NAME}:latest \
+                      --no-progress \
+                      --scanners vuln \
+                      --exit-code 0 \
+                      --severity HIGH,CRITICAL \
+                      --format table
+                """
             }
         }
     }
